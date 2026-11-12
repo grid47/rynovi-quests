@@ -12,6 +12,7 @@ Run `python quest.py 4` after each TODO.
 import logging
 import time
 from typing import Callable, TypeVar
+# from tenacity import retry, stop_after_attempt, wait_exponential
 
 T = TypeVar("T")
 log = logging.getLogger("rynovi.retry")
@@ -35,4 +36,21 @@ def call_with_retry(fn: Callable[[], T], attempts: int = 4, base_delay: float = 
     TODO 4.3 · Before each wait, log a warning exactly like:
               log.warning("attempt %d failed: %s; retrying in %.1fs", attempt_number, error, delay)
     """
-    raise NotImplementedError
+
+    for attempt in range(1, attempts + 1):
+        try:
+            return fn()
+
+        except TransientError as error:
+            if attempt == attempts:
+                raise
+
+            delay = base_delay * (2 ** (attempt - 1))
+
+            log.warning("attempt %d failed: %s; retrying in %.1fs", attempt, error, delay)
+
+            sleep(delay)
+
+        except Exception:
+            raise
+    # raise NotImplementedError
