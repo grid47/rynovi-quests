@@ -6,6 +6,21 @@
 #        It should wait for the database: depends_on db.
 #   db:  image postgres:16, with POSTGRES_PASSWORD=rynovi
 #
+version: "3.8"
+services:
+  api:
+    build: ./
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: 'postgresql://postgres:rynovi@db:5432/postgres'
+    depends_on:
+      - db
+  db:  
+   image: postgres:16
+   environment:
+    POSTGRES_PASSWORD: rynovi
+
 # TODO 11.3 · Make it start cleanly: python quest.py 11 runs `docker compose up`, calls
 #   http://localhost:8000/health and expects {"api": "ok", "db": "ok"}.
 #   Hint: Postgres takes a few seconds to wake up. Give db a healthcheck
