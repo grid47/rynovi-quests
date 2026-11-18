@@ -11,10 +11,17 @@ Run `python quest.py 12` to check all three.
 No paid agent? Run Claude Code free on your laptop: https://github.com/alexriderspy/local-coding-agent
 """
 
+import string
+from collections import Counter
+
+def _words(text: str) -> list[str]:
+    cleaned = (w.strip(string.punctuation) for w in text.lower().split())
+    return [w for w in cleaned if w]
 
 def word_count(text: str) -> int:
     """Number of words. Words are separated by whitespace; "  hello   world " has 2."""
-    raise NotImplementedError
+    # raise NotImplementedError
+    return len(text.split())
 
 
 def top_words(text: str, n: int = 3) -> list[tuple[str, int]]:
