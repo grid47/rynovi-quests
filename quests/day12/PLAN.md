@@ -1,0 +1,7 @@
+- Add `word_count`: split on whitespace, return the number of tokens (empty text gives 0).
+- Add a private `_words` helper: lowercase, split, strip punctuation from both ends, drop empty tokens.
+- Add `top_words`: count with `collections.Counter`, sort by (-count, word) so ties break alphabetically, return the first n.
+- Add `reading_time_minutes`: ceil(word_count / wpm) using integer math; empty text gives 0.
+- Run test_textstats.py after each function; do not edit the tests.
+- Commit in small steps: plan, then word_count, then the other two.
+- Thats it
