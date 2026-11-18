@@ -28,9 +28,12 @@ def top_words(text: str, n: int = 3) -> list[tuple[str, int]]:
     """The n most common words with their counts, most common first.
     Ignore case and strip punctuation from the ends of words ("AI," and "ai" are the same word).
     Break ties alphabetically."""
-    raise NotImplementedError
+    # raise NotImplementedError
+    counts = Counter(_words(text))
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:n]
 
 
 def reading_time_minutes(text: str, wpm: int = 200) -> int:
     """Whole minutes to read the text at wpm words per minute, rounded UP. Empty text is 0 minutes."""
-    raise NotImplementedError
+    # raise NotImplementedError
+    return -(-word_count(text) // wpm)
