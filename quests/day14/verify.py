@@ -13,18 +13,29 @@ from quests.day14.outputs import OUTPUTS  # noqa: F401  (the 10 raw model replie
 
 class Line(BaseModel):
     # TODO 14.1 · description: str, qty: int (at least 1), unit_price: float (not negative)
-    pass
+    description: str
+    qty: int = Field(ge=1)           # at least 1
+    unit_price: float = Field(ge=0)  # not negative
+    # pass
 
 
 class Invoice(BaseModel):
     # TODO 14.1 · vendor: str, invoice_no: str, lines: list[Line], total: float (not negative)
+    vendor: str
+    invoice_no: str
+    lines: list[Line]
+    total: float = Field(ge=0)
     pass
 
 
 def parse(raw: str) -> Invoice | None:
     """TODO 14.2 · Turn one raw model reply into an Invoice.
     Return None when it isn't valid JSON or doesn't match the schema (hint: Invoice.model_validate_json)."""
-    raise NotImplementedError
+    try:
+        return Invoice.model_validate_json(raw)
+    except ValidationError:
+        return None
+    # raise NotImplementedError
 
 
 def problems(inv: Invoice) -> list[str]:
@@ -32,7 +43,16 @@ def problems(inv: Invoice) -> list[str]:
       "no lines"        when lines is empty
       "total mismatch"  when the sum of qty × unit_price differs from total by more than 1 rupee
     An invoice with nothing wrong gives []."""
-    raise NotImplementedError
+    if len(inv.lines) == 0 or not inv.lines:
+        return ["no lines"] #ValidationError("no lines")
+    found = []
+
+    net = sum(line.qty * line.unit_price for line in inv.lines)
+    if abs(net - inv.total) > 1:
+        found.append("total mismatch")
+
+    return found
+    # raise NotImplementedError
 
 
 def route(raws: list[str]) -> dict[str, list[str]]:
@@ -41,4 +61,19 @@ def route(raws: list[str]) -> dict[str, list[str]]:
       review:   invoice_no of invoices that parse but have problems,
                 and "reply {i}" (i = position in raws, from 0) for replies that don't parse at all
     Keep the order of raws."""
-    raise NotImplementedError
+    
+    ret = {"accepted": [], "review": []}
+
+    for i, raw in enumerate(raws):
+        inv = parse(raw)
+        if inv is None:
+            ret["review"].append(f"reply {i}")
+        elif problems(inv):
+            ret["review"].append(inv.invoice_no)
+        else:
+            ret["accepted"].append(inv.invoice_no)
+
+    return ret
+
+
+    # raise NotImplementedError
